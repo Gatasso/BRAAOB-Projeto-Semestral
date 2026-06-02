@@ -1,0 +1,2 @@
+[tool.vercel]
+entrypoint = "arrumaIF_api.run:app"
