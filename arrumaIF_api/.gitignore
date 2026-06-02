@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.pytest_cache/*
+.python-version
+
+# Environment variables / secrets
+.env
+.env.*
+*.env
+
+# Virtual environments
+venv/
+.venv/
+ENV/
+env/
+.env/
+
+# Flask
+instance/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+# Logs
+*.log
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+.cache/
+
+# SQLite
+*.sqlite3
+
+# Migrations (keep if you want schema history; ignore only if intentionally local)
+# migrations/
