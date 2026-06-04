@@ -1,2 +1,9 @@
+[project]
+name = "arrumaif-api"
+version = "0.1.0"
+description = "API para o projeto ArrumaIF"
+requires-python = ">=3.12"
+dependencies = []
+
 [tool.vercel]
-entrypoint = "arrumaIF_api.app:app"
+entrypoint = "arrumaIF_api.main:app"
