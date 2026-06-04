@@ -1,2 +1,2 @@
 [tool.vercel]
-entrypoint = "arrumaIF_api.run:app"
+entrypoint = "arrumaIF_api.app:app"
