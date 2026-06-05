@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app import db
+from main import db
 from app.models import Mobiliario
 
 mobiliario_bp = Blueprint('mobiliario_route', __name__, url_prefix='/api/mobiliarios')

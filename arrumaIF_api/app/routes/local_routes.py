@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from app import db
+from main import db
 from app.models import Local
 
 local_bp = Blueprint('local_bp', __name__, url_prefix='/api/locais')

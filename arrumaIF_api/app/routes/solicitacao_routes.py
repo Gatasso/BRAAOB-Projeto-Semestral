@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from app import db
+from main import db
 from app.models import HistoricoSolicitacao, Solicitacao, Usuario, Equipamento
 from datetime import datetime
 

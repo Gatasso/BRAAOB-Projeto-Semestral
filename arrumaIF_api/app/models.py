@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from sqlalchemy.orm import validates
 import textwrap
-from app import db
+from main import db
 
 # ===========================================================================
 # TABELAS DE USUÁRIOS

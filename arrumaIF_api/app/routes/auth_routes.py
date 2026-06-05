@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
-from models import db, Usuario
+from app.models import Usuario
+from main import db
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 

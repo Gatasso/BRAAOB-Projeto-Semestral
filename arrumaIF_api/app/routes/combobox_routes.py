@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify
-from models import Local, Defeitos, Solucoes
+from app.models import Local, Defeitos, Solucoes
+from main import db
 
 suporte_bp = Blueprint('suporte', __name__, url_prefix='/api/suporte')
 
