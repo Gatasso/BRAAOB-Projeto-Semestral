@@ -110,15 +110,6 @@ class Componente(db.Model):
             'descricao': self.descricao
         }
 
-    def to_dict(self):
-        return {
-            'cod_patrimonio': self.cod_patrimonio,
-            'nome': self.nome,
-            'descricao': self.descricao,
-            'cod_sala': self.cod_sala,
-            'criado_em': self.criado_em.isoformat() if self.criado_em else None,
-        }
-
 # ===========================================================================
 # 4. TABELAS DE SOLICITAÇÃO
 # ===========================================================================
@@ -196,7 +187,7 @@ class Solicitacao(db.Model):
     mobiliario = db.relationship('Mobiliario', back_populates='solicitacoes')
     componente = db.relationship('Componente', back_populates='solicitacoes')
     defeito = db.relationship('Defeitos', back_populates='solicitacoes')
-    solucao = db.relationship('solucoes', back_populates='solicitacoes')
+    solucao = db.relationship('Solucoes', back_populates='solicitacoes')
     
     historicos = db.relationship(
         'HistoricoSolicitacao',
