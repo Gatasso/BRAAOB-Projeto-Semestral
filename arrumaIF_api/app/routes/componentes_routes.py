@@ -2,9 +2,9 @@ from flask import Blueprint, request, jsonify
 from main import db
 from app.models import Componente
 
-componente_bp = Blueprint('componente_route', __name__, url_prefix='/api/componentes')
+componente_bp = Blueprint('componente_bp', __name__, url_prefix='/api/componentes')
 
-@componente_bp.route('', methods=['POST'])
+@componente_bp.post('/')
 def criar_componente():
     data = request.get_json() or {}
     try:
@@ -22,17 +22,17 @@ def criar_componente():
         db.session.rollback()
         return jsonify({"erro": "Erro ao cadastrar componente", "detalhes": str(e)}), 400
 
-@componente_bp.route('', methods=['GET'])
+@componente_bp.get('/')
 def listar_componentes():
     itens = Componente.query.all()
     return jsonify([c.to_dict() for c in itens]), 200
 
-@componente_bp.route('/<int:id>', methods=['GET'])
+@componente_bp.get('/<int:id>')
 def obter_componente(id):
     item = Componente.query.get_or_404(id)
     return jsonify(item.to_dict()), 200
 
-@componente_bp.route('/<int:id>', methods=['PUT'])
+@componente_bp.put('/<int:id>')
 def atualizar_componente(id):
     item = Componente.query.get_or_404(id)
     data = request.get_json() or {}
@@ -48,7 +48,7 @@ def atualizar_componente(id):
         db.session.rollback()
         return jsonify({"erro": "Erro ao atualizar componente", "detalhes": str(e)}), 400
 
-@componente_bp.route('/<int:id>', methods=['DELETE'])
+@componente_bp.delete('/<int:id>')
 def deletar_componente(id):
     item = Componente.query.get_or_404(id)
     try:

@@ -1,10 +1,9 @@
 from flask import Blueprint, request, jsonify
 from app.models import Usuario
-from main import db
 
-auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
+auth_bp = Blueprint('auth_bp', __name__, url_prefix='/api/auth')
 
-@auth_bp.route('/login', methods=['POST'])
+@auth_bp.post('/login')
 def login():
     data = request.get_json() or {}
     prontuario = data.get('prontuario')

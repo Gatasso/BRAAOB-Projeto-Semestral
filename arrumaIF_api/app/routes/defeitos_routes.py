@@ -2,9 +2,9 @@ from flask import Blueprint, request, jsonify
 from main import db
 from app.models import Defeitos
 
-defeitos_bp = Blueprint('defeitos_route', __name__, url_prefix='/api/defeitos')
+defeitos_bp = Blueprint('defeitos_bp', __name__, url_prefix='/api/defeitos')
 
-@defeitos_bp.route('', methods=['POST'])
+@defeitos_bp.post('/')
 def criar_defeito():
     data = request.get_json() or {}
     try:
@@ -19,17 +19,17 @@ def criar_defeito():
         db.session.rollback()
         return jsonify({"erro": "Erro ao catalogar defeito", "detalhes": str(e)}), 400
 
-@defeitos_bp.route('', methods=['GET'])
+@defeitos_bp.get('/')
 def listar_defeitos():
     lista = Defeitos.query.all()
     return jsonify([d.to_dict() for d in lista]), 200
 
-@defeitos_bp.route('/<int:id>', methods=['GET'])
+@defeitos_bp.get('/<int:id>')
 def obter_defeito(id):
     defeito = Defeitos.query.get_or_404(id)
     return jsonify(defeito.to_dict()), 200
 
-@defeitos_bp.route('/<int:id>', methods=['PUT'])
+@defeitos_bp.put('/<int:id>')
 def atualizar_defeito(id):
     defeito = Defeitos.query.get_or_404(id)
     data = request.get_json() or {}
@@ -42,7 +42,7 @@ def atualizar_defeito(id):
         db.session.rollback()
         return jsonify({"erro": "Erro ao atualizar defeito", "detalhes": str(e)}), 400
 
-@defeitos_bp.route('/<int:id>', methods=['DELETE'])
+@defeitos_bp.delete('/<int:id>')
 def deletar_defeito(id):
     defeito = Defeitos.query.get_or_404(id)
     try:

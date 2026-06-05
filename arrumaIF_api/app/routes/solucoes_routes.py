@@ -2,9 +2,9 @@ from flask import Blueprint, request, jsonify
 from main import db
 from app.models import Solucoes
 
-solucoes_bp = Blueprint('solucoes_route', __name__, url_prefix='/api/solucoes')
+solucoes_bp = Blueprint('solucoes_bp', __name__, url_prefix='/api/solucoes')
 
-@solucoes_bp.route('', methods=['POST'])
+@solucoes_bp.post('/')
 def criar_solucao():
     data = request.get_json() or {}
     try:
@@ -19,17 +19,17 @@ def criar_solucao():
         db.session.rollback()
         return jsonify({"erro": "Erro ao cadastrar solução", "detalhes": str(e)}), 400
 
-@solucoes_bp.route('', methods=['GET'])
+@solucoes_bp.get('/')
 def listar_solucoes():
     lista = Solucoes.query.all()
     return jsonify([s.to_dict() for s in lista]), 200
 
-@solucoes_bp.route('/<int:id>', methods=['GET'])
+@solucoes_bp.get('/<int:id>')
 def obter_solucao(id):
     solucao = Solucoes.query.get_or_404(id)
     return jsonify(solucao.to_dict()), 200
 
-@solucoes_bp.route('/<int:id>', methods=['PUT'])
+@solucoes_bp.put('/<int:id>')
 def atualizar_solucao(id):
     solucao = Solucoes.query.get_or_404(id)
     data = request.get_json() or {}
@@ -42,7 +42,7 @@ def atualizar_solucao(id):
         db.session.rollback()
         return jsonify({"erro": "Erro ao atualizar solução", "detalhes": str(e)}), 400
 
-@solucoes_bp.route('/<int:id>', methods=['DELETE'])
+@solucoes_bp.delete('/<int:id>')
 def deletar_solucao(id):
     solucao = Solucoes.query.get_or_404(id)
     try:
