@@ -1,20 +1,23 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from flask_migrate import Migrate
 from config import Config
-from app import models
-from app.routes import usuario_bp, local_bp, equipamento_bp, solicitacao_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
+CORS(app)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-app.register_blueprint(usuario_bp)
-app.register_blueprint(local_bp)
-app.register_blueprint(equipamento_bp)
-app.register_blueprint(solicitacao_bp)
+from app.routes import all_blueprints
+for blueprint in all_blueprints:
+    app.register_blueprint(blueprint)
+
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    return {"status": "online", "projeto": "arrumaIF_api"}, 200
 
 if __name__ == '__main__':
     app.run(debug=True)

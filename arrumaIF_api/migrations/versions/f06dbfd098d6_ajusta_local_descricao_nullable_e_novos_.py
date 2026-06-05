@@ -1,8 +1,8 @@
-"""ajuste estrutura banco arrumaIF: cria tabelas Mobilia, Componente, Defeitos e Solucao, ajusta solicitacao e historico
+"""ajusta_local_descricao_nullable_e_novos_cruds
 
-Revision ID: 474fb5ccdcef
+Revision ID: f06dbfd098d6
 Revises: 51ef82af819b
-Create Date: 2026-06-04 15:39:05.471833
+Create Date: 2026-06-05 15:33:29.651139
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '474fb5ccdcef'
+revision = 'f06dbfd098d6'
 down_revision = '51ef82af819b'
 branch_labels = None
 depends_on = None
@@ -24,11 +24,6 @@ def upgrade():
         batch_op.drop_column('causa_diagnostico')
         batch_op.drop_column('solucao_diagnostico')
 
-    with op.batch_alter_table('local', schema=None) as batch_op:
-        batch_op.alter_column('descricao',
-               existing_type=sa.VARCHAR(length=255),
-               nullable=False)
-
     with op.batch_alter_table('solicitacao', schema=None) as batch_op:
         batch_op.alter_column('cod_sala',
                existing_type=sa.VARCHAR(length=50),
@@ -41,8 +36,8 @@ def upgrade():
                nullable=True)
         batch_op.drop_constraint(batch_op.f('solicitacao_usuario_id_fkey'), type_='foreignkey')
         batch_op.drop_constraint(batch_op.f('solicitacao_cod_patrimonio_fkey'), type_='foreignkey')
-        batch_op.create_foreign_key(None, 'equipamento', ['cod_patrimonio'], ['cod_patrimonio'], ondelete='RESTRICT')
         batch_op.create_foreign_key(None, 'usuario', ['usuario_id'], ['id'], ondelete='RESTRICT')
+        batch_op.create_foreign_key(None, 'equipamento', ['cod_patrimonio'], ['cod_patrimonio'], ondelete='RESTRICT')
 
     # ### end Alembic commands ###
 
@@ -62,11 +57,6 @@ def downgrade():
                nullable=True)
         batch_op.alter_column('cod_sala',
                existing_type=sa.VARCHAR(length=50),
-               nullable=True)
-
-    with op.batch_alter_table('local', schema=None) as batch_op:
-        batch_op.alter_column('descricao',
-               existing_type=sa.VARCHAR(length=255),
                nullable=True)
 
     with op.batch_alter_table('historico_solicitacao', schema=None) as batch_op:

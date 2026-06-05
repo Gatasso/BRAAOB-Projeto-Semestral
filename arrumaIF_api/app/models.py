@@ -43,7 +43,7 @@ class Local(db.Model):
     __tablename__ = 'local'
 
     cod_sala = db.Column(db.String(50), primary_key=True)
-    descricao = db.Column(db.String(255), nullable=False)
+    descricao = db.Column(db.String(255), nullable=True)
     tipo_local = db.Column(db.String(20), db.CheckConstraint("tipo_local IN ('Sala', 'Laboratorio')"), nullable=False) 
     criado_em = db.Column(db.DateTime(timezone=True), server_default=db.text("NOW()"), nullable=False)
 

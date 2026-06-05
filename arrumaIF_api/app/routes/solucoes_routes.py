@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from main import db
-from app.models import Solucan
+from app.models import Solucoes
 
 solucoes_bp = Blueprint('solucoes_route', __name__, url_prefix='/api/solucoes')
 
@@ -8,7 +8,7 @@ solucoes_bp = Blueprint('solucoes_route', __name__, url_prefix='/api/solucoes')
 def criar_solucao():
     data = request.get_json() or {}
     try:
-        nova_solucao = Solucan(
+        nova_solucao = Solucoes(
             titulo=data.get('titulo'),
             descricao=data.get('descricao')
         )
@@ -21,17 +21,17 @@ def criar_solucao():
 
 @solucoes_bp.route('', methods=['GET'])
 def listar_solucoes():
-    lista = Solucan.query.all()
+    lista = Solucoes.query.all()
     return jsonify([s.to_dict() for s in lista]), 200
 
 @solucoes_bp.route('/<int:id>', methods=['GET'])
 def obter_solucao(id):
-    solucao = Solucan.query.get_or_404(id)
+    solucao = Solucoes.query.get_or_404(id)
     return jsonify(solucao.to_dict()), 200
 
 @solucoes_bp.route('/<int:id>', methods=['PUT'])
 def atualizar_solucao(id):
-    solucao = Solucan.query.get_or_404(id)
+    solucao = Solucoes.query.get_or_404(id)
     data = request.get_json() or {}
     try:
         solucao.titulo = data.get('titulo', solucao.titulo)
@@ -44,7 +44,7 @@ def atualizar_solucao(id):
 
 @solucoes_bp.route('/<int:id>', methods=['DELETE'])
 def deletar_solucao(id):
-    solucao = Solucan.query.get_or_404(id)
+    solucao = Solucoes.query.get_or_404(id)
     try:
         db.session.delete(solucao)
         db.session.commit()
