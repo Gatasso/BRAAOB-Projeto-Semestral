@@ -14,6 +14,7 @@ class Usuario(db.Model):
     prontuario = db.Column(db.String(50), unique=True, nullable=False)
     nome = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
+    senha = db.Column(db.String(255), nullable=False)
     tipo = db.Column(db.String(50), nullable=False)  # 'Aluno', 'Docente', 'TAE', 'TI'
     ativo = db.Column(db.Boolean, default=True, nullable=False)
     criado_em = db.Column(db.DateTime(timezone=True), default=datetime.utcnow, nullable=False)
