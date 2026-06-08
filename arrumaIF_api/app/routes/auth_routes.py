@@ -5,7 +5,7 @@ import bcrypt
 
 auth_bp = Blueprint('auth_bp', __name__, url_prefix='/api/login')
 
-@auth_bp.post('/login')
+@auth_bp.post('/')
 def login():
     data = request.get_json() or {}
     prontuario = data.get('prontuario')
