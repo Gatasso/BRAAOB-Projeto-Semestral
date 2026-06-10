@@ -77,6 +77,14 @@ class Equipamento(db.Model):
     solicitacoes = db.relationship(
         'Solicitacao', back_populates='equipamento', lazy='dynamic'
     )
+    def to_dict(self):
+        return {
+            'cod_patrimonio': self.cod_patrimonio,
+            'nome': self.nome,
+            'descricao': self.descricao,
+            'cod_sala': self.cod_sala,
+            'criado_em': self.criado_em.isoformat() if self.criado_em else None,
+        }
 
 class Mobiliario(db.Model):
     __tablename__ = 'mobiliario'
