@@ -1,11 +1,11 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
 from main import db
 from app.models import Usuario
+import bcrypt
 
 usuario_bp = Blueprint('usuario_bp', __name__, url_prefix='/api/usuarios')
 
-TIPOS_VALIDOS = {'Aluno', 'Docente', 'TAE', 'TI'}
-
+TIPOS_VALIDOS = {'Aluno', 'Docente', 'TAE', 'TI', 'Admin'}
 
 @usuario_bp.post('/')
 def criar_usuario():
@@ -17,17 +17,23 @@ def criar_usuario():
     nome = payload.get('nome')
     email = payload.get('email')
     tipo = payload.get('tipo')
+    senha = payload.get('senha')
 
     if not prontuario or not nome or not email or not tipo:
         return jsonify({'erro': 'Os campos prontuario, nome, email e tipo são obrigatórios.'}), 400
 
     if tipo not in TIPOS_VALIDOS:
         return jsonify({'erro': f"Tipo inválido. Valores válidos: {sorted(TIPOS_VALIDOS)}."}), 400
-
+        
     if Usuario.query.filter_by(prontuario=prontuario).first():
         return jsonify({'erro': 'Prontuário já cadastrado.'}), 400
     if Usuario.query.filter_by(email=email).first():
         return jsonify({'erro': 'Email já cadastrado.'}), 400
+
+    if not senha:
+        senha = current_app.config['DEFAULT_USER_PASSWORD']
+    senha_encryp = senha.encode('utf-8')
+    senha_hash = bcrypt.hashpw(senha_encryp, bcrypt.gensalt()).decode('utf-8') 
 
     try:
         usuario = Usuario(
@@ -35,6 +41,7 @@ def criar_usuario():
             nome=nome,
             email=email,
             tipo=tipo,
+            senha=senha_hash,
         )
         db.session.add(usuario)
         db.session.commit()

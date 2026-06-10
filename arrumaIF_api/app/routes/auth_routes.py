@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from app.models import Usuario
 from main import db
 import bcrypt
@@ -51,16 +51,14 @@ def reset_password():
         return jsonify({"mensagem": "Se o e-mail for válido, as instruções de redefinição foram processadas."}), 200
 
     try:
-        senha_padrao = "senha123"
+        senha_padrao = current_app.config['DEFAULT_USER_PASSWORD']
         
         senha_encryp = senha_padrao.encode('utf-8')
         hash_senha_padrao = bcrypt.hashpw(senha_encryp, bcrypt.gensalt()).decode('utf-8')
 
-        # Atualiza o registro no banco de dados
         usuario.senha = hash_senha_padrao
         db.session.commit()
 
-        # Retorna a mensagem customizada orientando o usuário a falar com a TI/Administradores
         return jsonify({
             "mensagem": "Sua senha foi resetada com sucesso para o padrão provisório do sistema. Por motivos de segurança, entre em contato com os administradores da TI para obter o acesso ou realizar a troca definitiva."
         }), 200
