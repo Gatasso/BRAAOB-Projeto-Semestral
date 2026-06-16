@@ -1,8 +1,8 @@
 # arrumaÍF
 
-> [Breve frase de pitch que explica o propósito do projeto]
+> Sejam bem vindos ao arrumaÍF, o Sistema de reportes em reparos do IFSP - Bragança Paulista
 
-## 📌 Descrição Resumida
+## 📌 O que é o arrumaÍF
 
 O arrumaíF é um sistema web e mobile desenvolvido para suprir a falta de 
 um canal oficial no IFSP-BRA que dê autonomia para alunos, professores e 
@@ -11,9 +11,18 @@ no cotidiano do campus. O sistema centraliza os reportes, agiliza a
 providência de reparos pela equipe de manutenção e estabelece um fluxo 
 transparente de comunicação.
 
-## 🚦 Status do Projeto
+## 🚦 Status
 
 <img src="https://img.shields.io/badge/version-1.0.0-blue" alt="version" /> <img src="https://img.shields.io/badge/status-em%20desenvolvimento-yellow" alt="status" />
+
+## 🛣️ Roadmap
+
+- [ ✅ ] Especifiação Funcional 
+- [ ✅ ] Protótipos de Telas
+- [ ✅ ] Schema Banco de Dados
+- [ ✅ ] API Backend
+- [ ⏳ ] Front-End
+- [ ⏳ ] Aplicativo Mobile 
 
 
 ## 🎯 Objetivos
@@ -25,7 +34,7 @@ transparente de comunicação.
 - Garantir transparência permitindo que os autores dos reportes acompanhem em tempo real o status dos equipamentos afetados.
 - Promover melhores interações entre atores da instituição, acolhimento de frustrações, e, consequentemente, melhorar a qualidade de ensino dos alunos.
 
-## 🧩 Problema que o Projeto Resolve
+## 🧩 Problemas que o arrumaÍF atende
 
 Atualmente, a alta rotação de pessoas no campus gera desgastes e defeitos 
 em equipamentos e salas de aula. A ausência de um canal oficial gera 
@@ -138,19 +147,13 @@ três camadas:
 - [Formato de requisição e resposta]
 - [Autenticação, headers e exemplos]
 
-## 🛣️ Roadmap
-
-- [Recursos planejados]
-- [Melhorias futuras]
-- [Possíveis marcos ou versões]
-
 ## 🤝 Como Contribuir
 
 - [Instruções para abrir issues]
 - [Guia para pull requests]
 - [Padrões de revisão e comunicação] -->
 
-## Como rodar localmente o projeto
+##  Como rodar localmente o projeto
 ### Rodando a API localmente (arrumaIF_api)
 
 - Requisitos básicos: Python 3.10+ (ou versão compatível), `git`, e um gerenciador de ambientes (`venv`/`virtualenv`).
