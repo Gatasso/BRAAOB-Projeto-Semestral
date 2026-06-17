@@ -14,6 +14,7 @@ all_blueprints = [
     local_bp,
     defeitos_bp,
     solucoes_bp,
+    solicitacao_bp,
     mobiliario_bp
 ]
 
