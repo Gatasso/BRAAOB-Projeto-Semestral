@@ -26,7 +26,7 @@ def registrar_historico(solicitacao_id, usuario_id, status_anterior, status_novo
     db.session.add(historico)
 
 # UC 0001: Registro de Solicitação & UC 0007: Mídia / URL Foto
-@solicitacao_bp.route('', methods=['POST'])
+@solicitacao_bp.post('/')
 def registrar_solicitacao():
     data = request.get_json() or {}
     
@@ -97,7 +97,7 @@ def listar_solicitacoes():
     return jsonify([solicitacao.to_dict() for solicitacao in solicitacoes]), 200
 
 # UC 0001: Edição de Solicitação Existente
-@solicitacao_bp.route('/<uuid:id>', methods=['PUT'])
+@solicitacao_bp.put('/<uuid:id>')
 def editar_solicitacao(id):
     solicitacao = Solicitacao.query.get_or_404(id)
     data = request.get_json() or {}
@@ -121,7 +121,7 @@ def editar_solicitacao(id):
     return jsonify({"mensagem": "MSG001: Operação realizada com sucesso"}), 200
 
 # UC 0002: Consulta de Solicitações (Lista do Usuário Autenticado)
-@solicitacao_bp.route('/usuario/<uuid:usuario_id>', methods=['GET'])
+@solicitacao_bp.get('/usuario/<uuid:usuario_id>')
 def listar_por_usuario(usuario_id):
     solicitacoes = Solicitacao.query.filter_by(usuario_id=usuario_id).order_by(Solicitacao.criado_em.desc()).all()
     
@@ -140,7 +140,7 @@ def listar_por_usuario(usuario_id):
     return jsonify(resultado), 200
 
 # UC 0002: Detalhamento da Solicitação com Histórico Completo de Auditoria
-@solicitacao_bp.route('/<uuid:id>', methods=['GET'])
+@solicitacao_bp.get('/<uuid:id>')
 def obter_detalhes_solicitacao(id):
     solicitacao = Solicitacao.query.get_or_404(id)
     historicos = HistoricoSolicitacao.query.filter_by(solicitacao_id=id).order_by(HistoricoSolicitacao.data_alteracao.asc()).all()
@@ -170,7 +170,7 @@ def obter_detalhes_solicitacao(id):
 
 
 # UC 0003 & UC 0004: Gestão e Alteração de Status (Uso da Equipe Técnica / TI)
-@solicitacao_bp.route('/<uuid:id>/status', methods=['PATCH'])
+@solicitacao_bp.patch('/<uuid:id>/status')
 def alterar_status(id):
     solicitacao = Solicitacao.query.get_or_404(id)
     data = request.get_json() or {}
@@ -206,7 +206,7 @@ def alterar_status(id):
 
 
 # UC 0005: Contestação de Resolução (Atores do tipo Usuário Aluno/Servidor)
-@solicitacao_bp.route('/<uuid:id>/contestar', methods=['POST'])
+@solicitacao_bp.post('/<uuid:id>/contestar')
 def contestar_resolucao(id):
     solicitacao = Solicitacao.query.get_or_404(id)
     data = request.get_json() or {}
