@@ -1,0 +1,7 @@
+export { LoginPage } from './LoginPage'
+export { HomePage } from './HomePage'
+export { InformativoPage } from './InformativoPage'
+export { AberturaChamadoPage } from './AberturaChamadoPage'
+export { AdminLoginPage } from './AdminLoginPage'
+export { AdminHomePage } from './AdminHomePage'
+export { AdminEditChamadoPage } from './AdminEditChamadoPage'
