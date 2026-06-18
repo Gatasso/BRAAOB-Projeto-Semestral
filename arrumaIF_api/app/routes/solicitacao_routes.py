@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from main import db
-from app.models import HistoricoSolicitacao, Solicitacao, Usuario, Equipamento
+from app.models import HistoricoSolicitacao, Solicitacao, Usuario
 from datetime import datetime
 
 solicitacao_bp = Blueprint('solicitacao_bp', __name__, url_prefix='/api/solicitacoes')
