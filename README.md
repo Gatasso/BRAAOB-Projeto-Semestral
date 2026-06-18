@@ -210,7 +210,7 @@ npm start
 <table align="center">
     <tr>
         <td align="center">
-            <a href="https://www.linkedin.com/in/">
+            <a href="https://www.linkedin.com/in/gabriel-capodeferro/">
                 <img src="https://github.com/gabrielcapodeferro.png" width="100px;" alt="" /><br />
                 <sub><b>Gabriel Luis de Lima Capodeferro</b></sub>
             </a>
@@ -218,7 +218,7 @@ npm start
             <sub><b>Documentation</b></sub>
         </td>
         <td align="center">
-            <a href="https://br.linkedin.com/in/">
+            <a href="https://www.linkedin.com/in/giovanni-alves-medici/">
                 <img src="https://github.com/Giovanni-Alves-Medici.png" width="100px;" alt="" /><br />
                 <sub><b>Giovanni Alves Medici</b></sub>
             </a>
@@ -226,7 +226,7 @@ npm start
             <sub><b>Product Owner & UX/UI</b></sub>
         </td>
         <td align="center">
-            <a href="https://www.linkedin.com/in">
+            <a href="https://www.linkedin.com/in/jaiane-silva-6911ab292/">
                 <img src="https://github.com/jaianesilva.png" width="100px;" alt="" /><br />
                 <sub><b>Jaiane Silva Pinto</b></sub>
             </a>
@@ -234,15 +234,15 @@ npm start
             <sub><b>Front-End Dev</b></sub>
         </td>
         <td align="center">
-            <a href="https://www.linkedin.com/in/">
-                <img src="https://github.com/jainevitoriasp" width="100px;" alt="" /><br />
+            <a href="https://www.linkedin.com/in/jaine-vit%C3%B3ria-897b7a27b/">
+                <img src="https://github.com/JaineVitoria.png" width="100px;" alt="" /><br />
                 <sub><b>Jaine Vitória Silva Pinto</b></sub>
             </a>
             <br />
             <sub><b>Front-End Dev</b></sub>
          </td>
         <td align="center">
-           <a href="https://www.linkedin.com/in/">
+           <a href="https://www.linkedin.com/in/galasso-matheus">
                 <img src="https://github.com/Gatasso.png" width="100px;" alt="" /><br />
                 <sub><b>Matheus Galasso Romera</b></sub>
            </a>
