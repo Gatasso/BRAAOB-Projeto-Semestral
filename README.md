@@ -212,7 +212,7 @@ npm start
         <td align="center">
             <a href="https://www.linkedin.com/in/gabriel-capodeferro/">
                 <img src="https://github.com/gabrielcapodeferro.png" width="100px" alt="" /><br />
-                <sub><b>Gabriel Luis de Lima Capodeferro</b></sub>
+                <sub><b>Gabriel Capodeferro</b></sub>
             </a>
             <br />
             <sub><b>Documentation</b></sub>
@@ -228,7 +228,7 @@ npm start
         <td align="center">
             <a href="https://www.linkedin.com/in/jaiane-silva-6911ab292/">
                 <img src="https://github.com/jaianesilva.png" width="100px" alt="" /><br />
-                <sub><b>Jaiane Silva Pinto</b></sub>
+                <sub><b>Jaiane Silva</b></sub>
             </a>
             <br />
             <sub><b>Front-End Dev</b></sub>
@@ -236,7 +236,7 @@ npm start
         <td align="center">
             <a href="https://www.linkedin.com/in/jaine-vit%C3%B3ria-897b7a27b/">
                 <img src="https://github.com/JaineVitoria.png" width="100px" alt="" /><br />
-                <sub><b>Jaine Vitória Silva Pinto</b></sub>
+                <sub><b>Jaine Vitória Silva</b></sub>
             </a>
             <br />
             <sub><b>Front-End Dev</b></sub>
