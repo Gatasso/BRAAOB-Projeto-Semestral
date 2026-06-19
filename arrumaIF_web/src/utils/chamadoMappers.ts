@@ -50,9 +50,13 @@ export function formatHistorico(historico: HistoricoItem[]): string {
 }
 
 export function resumoToChamadoUI(resumo: SolicitacaoResumo): ChamadoUI {
+  const titulo = resumo.defeito_titulo
+    ? `${resumo.material} - ${resumo.defeito_titulo}`
+    : resumo.material
+
   return {
     id: resumo.id,
-    titulo: resumo.material,
+    titulo,
     localizacao: `Sala ${resumo.cod_sala} · IFSP Bragança Paulista`,
     data: formatDate(resumo.criado_em),
     descricao: '',
@@ -74,7 +78,7 @@ export function detalheToChamadoUI(
     (detalhe.componente_id ? `Componente #${detalhe.componente_id}` : null) ??
     'Material'
 
-  const titulo = defeitoTitulo ?? material
+  const titulo = defeitoTitulo ? `${material} - ${defeitoTitulo}` : material
 
   return {
     id: detalhe.id,

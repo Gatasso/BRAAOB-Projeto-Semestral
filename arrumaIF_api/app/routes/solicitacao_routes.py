@@ -130,10 +130,21 @@ def listar_por_usuario(usuario_id):
 
     resultado = []
     for s in solicitacoes:
+        if s.cod_patrimonio and s.equipamento:
+            material = s.equipamento.nome
+        elif s.mobiliario_id and s.mobiliario:
+            material = s.mobiliario.nome
+        elif s.componente_id and s.componente:
+            material = s.componente.nome
+        else:
+            material = s.cod_patrimonio or f"Mobiliário ID {s.mobiliario_id}" or f"Componente ID {s.componente_id}" or 'Material'
+
         resultado.append({
             "id": str(s.id),
             "cod_sala": s.cod_sala,
-            "material": s.cod_patrimonio or f"Mobiliário ID {s.mobiliario_id}" or f"Componente ID {s.componente_id}",
+            "material": material,
+            "id_defeito": s.id_defeito,
+            "defeito_titulo": s.defeito.titulo if s.defeito else None,
             "status": s.status,
             "criado_em": s.criado_em.isoformat()
         })

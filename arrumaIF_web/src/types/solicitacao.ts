@@ -11,6 +11,8 @@ export interface SolicitacaoResumo {
   id: string
   cod_sala: string
   material: string
+  id_defeito?: number
+  defeito_titulo?: string | null
   status: SolicitacaoStatus | string
   criado_em: string
 }
