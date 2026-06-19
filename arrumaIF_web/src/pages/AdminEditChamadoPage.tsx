@@ -9,7 +9,8 @@ import {
   Textarea,
 } from '@/components/ui'
 import { getUser } from '@/lib/auth'
-import { fetchDefeitos, fetchLocais } from '@/services/catalogoService'
+import { fetchDefeitos, fetchLocais, fetchEquipamentos, fetchMobiliarios } from '@/services/catalogoService'
+import { fetchUsuario } from '@/services/usuarioService'
 import {
   atualizarSolicitacao,
   fetchSolicitacaoDetalhe,
@@ -56,7 +57,38 @@ export function AdminEditChamadoPage() {
         ])
 
         const defeitoTitulo = findDefeitoTitulo(defeitos, detalhe.id_defeito)
-        const ui = detalheToChamadoUI(detalhe, defeitoTitulo)
+
+        const materialPromise = (async () => {
+          if (detalhe.cod_patrimonio) {
+            const equipamentos = await fetchEquipamentos(detalhe.cod_sala)
+            return (
+              equipamentos.find((e) => e.cod_patrimonio === detalhe.cod_patrimonio)
+                ?.nome ?? detalhe.cod_patrimonio
+            )
+          }
+          if (detalhe.mobiliario_id) {
+            const mobiliarios = await fetchMobiliarios()
+            return (
+              mobiliarios.find((m) => m.id === detalhe.mobiliario_id)?.nome ??
+              `Mobiliário #${detalhe.mobiliario_id}`
+            )
+          }
+          if (detalhe.componente_id) {
+            return `Componente #${detalhe.componente_id}`
+          }
+          return 'Material'
+        })()
+
+        const numeroPromise = (async () => {
+          if (detalhe.cod_patrimonio) return detalhe.cod_patrimonio
+          if (detalhe.mobiliario_id) return '-'
+          if (detalhe.componente_id) return String(detalhe.componente_id)
+          return '—'
+        })()
+
+        const [material, numero] = await Promise.all([materialPromise, numeroPromise])
+
+        const ui = detalheToChamadoUI(detalhe, defeitoTitulo, material, numero)
 
         setTitulo(ui.titulo)
         setLocalizacao(detalhe.cod_sala)

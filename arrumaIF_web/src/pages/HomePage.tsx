@@ -3,7 +3,8 @@ import { PageLayout } from '@/components/layouts/PageLayout'
 import { ChamadoDetalhesModal } from '@/components/ChamadoDetalhesModal'
 import { EquipamentoCard, FilterButton, Logo } from '@/components/ui'
 import { getUser } from '@/lib/auth'
-import { fetchDefeitos } from '@/services/catalogoService'
+import { fetchDefeitos, fetchEquipamentos, fetchMobiliarios } from '@/services/catalogoService'
+import { fetchUsuario } from '@/services/usuarioService'
 import {
   fetchSolicitacaoDetalhe,
   fetchSolicitacoesPorUsuario,
@@ -76,8 +77,79 @@ export function HomePage() {
         fetchSolicitacaoDetalhe(chamado.id),
         fetchDefeitos(),
       ])
+
       const titulo = findDefeitoTitulo(defeitos, detalhe.id_defeito)
-      setSelectedChamado(detalheToChamadoUI(detalhe, titulo))
+
+      const materialPromise = (async () => {
+        if (detalhe.cod_patrimonio) {
+          // const equipamentos = await fetchEquipamentos(detalhe.cod_sala)
+          // return (
+          //   equipamentos.find((e) => e.cod_patrimonio === detalhe.cod_patrimonio)
+          //     ?.nome ?? detalhe.cod_patrimonio
+          // )
+          try {
+            const equipamentos = await fetchEquipamentos(detalhe.cod_sala)
+            const equipamentoEncontrado = equipamentos.find(
+              (e) => String(e.cod_patrimonio).trim() === String(detalhe.cod_patrimonio).trim()
+            )
+            
+            // 💡 A MÁGICA AQUI: Se não achar na API de equipamentos, 
+            // usa o chamado.equipamento que a Home já tinha e sabe que está certo!
+            return equipamentoEncontrado?.nome ?? chamado.equipamento ?? 'Equipamento'
+          } catch {
+            return chamado.equipamento ?? 'Equipamento'
+          }
+        }
+        if (detalhe.mobiliario_id) {
+          const mobiliarios = await fetchMobiliarios()
+          return (
+            mobiliarios.find((m) => m.id === detalhe.mobiliario_id)?.nome ??
+            `Mobiliário #${detalhe.mobiliario_id}`
+          )
+        }
+        if (detalhe.componente_id) {
+          return `Componente #${detalhe.componente_id}`
+        }
+        return 'Material'
+      })()
+
+      const numeroPromise = (async () => {
+        if (detalhe.cod_patrimonio) return detalhe.cod_patrimonio
+        if (detalhe.mobiliario_id) return '-'
+        if (detalhe.componente_id) return String(detalhe.componente_id)
+        return '—'
+      })()
+
+      const historicoPromise = (async () => {
+        const ids = Array.from(
+          new Set(detalhe.historico.map((item) => item.usuario_id).filter(Boolean)),
+        )
+        const lookup = new Map<string, string>()
+        await Promise.all(
+          ids.map(async (id) => {
+            try {
+              const user = await fetchUsuario(id)
+              lookup.set(id, user.nome)
+            } catch {
+              // ignore lookup failures
+            }
+          }),
+        )
+        return detalhe.historico.map((item) => ({
+          ...item,
+          usuario_nome: lookup.get(item.usuario_id) ?? item.usuario_id,
+        }))
+      })()
+
+      const [material, numero, historico] = await Promise.all([
+        materialPromise,
+        numeroPromise,
+        historicoPromise,
+      ])
+
+      setSelectedChamado(
+        detalheToChamadoUI(detalhe, titulo, material, numero, historico),
+      )
     } catch {
       setSelectedChamado(chamado)
     } finally {

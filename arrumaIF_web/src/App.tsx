@@ -9,6 +9,7 @@ import {
   HomePage,
   InformativoPage,
   LoginPage,
+  PerfilPage,
 } from '@/pages'
 import { isAuthenticated } from '@/lib/auth'
 
@@ -42,6 +43,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <AberturaChamadoPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/perfil"
+          element={
+            <ProtectedRoute>
+              <PerfilPage />
             </ProtectedRoute>
           }
         />

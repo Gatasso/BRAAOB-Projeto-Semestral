@@ -20,6 +20,7 @@ const userRoutes: Partial<Record<NavItemId, string>> = {
   home: '/',
   new: '/chamado/novo',
   info: '/informativo',
+  profile: '/perfil',
   logout: '/login',
   back: '-1',
 }

@@ -15,6 +15,12 @@ export interface LoginResponse {
   usuario: Usuario
 }
 
+export interface UsuarioDetalhe extends Usuario {
+  email: string
+  ativo: boolean
+  criado_em: string
+}
+
 export interface ApiErrorBody {
   erro?: string
   mensagem?: string

@@ -35,7 +35,8 @@ export function AberturaChamadoPage() {
   const [item, setItem] = useState<string[]>([])
   const [defeito, setDefeito] = useState<string[]>([])
   const [descricao, setDescricao] = useState('')
-  const [codigoSala, setCodigoSala] = useState('')
+  const [suggestionText, setSuggestionText] = useState('')
+  const [suggestionCodigo, setSuggestionCodigo] = useState('')
   const [codigoPatrimonio, setCodigoPatrimonio] = useState('')
   const [dialogOpen, setDialogOpen] = useState(false)
 
@@ -236,7 +237,11 @@ export function AberturaChamadoPage() {
               <button
                 type="button"
                 className="text-primary underline bg-transparent border-0 cursor-pointer"
-                onClick={() => setDialogOpen(true)}
+                onClick={() => {
+                  setSuggestionText('')
+                  setSuggestionCodigo('')
+                  setDialogOpen(true)
+                }}
               >
                 clique aqui
               </button>
@@ -313,7 +318,11 @@ export function AberturaChamadoPage() {
               <button
                 type="button"
                 className="text-primary underline bg-transparent border-0 cursor-pointer"
-                onClick={() => setDialogOpen(true)}
+                onClick={() => {
+                  setSuggestionText('')
+                  setSuggestionCodigo('')
+                  setDialogOpen(true)
+                }}
               >
                 clique aqui
               </button>
@@ -341,7 +350,11 @@ export function AberturaChamadoPage() {
               <button
                 type="button"
                 className="text-primary underline bg-transparent border-0 cursor-pointer"
-                onClick={() => setDialogOpen(true)}
+                onClick={() => {
+                  setSuggestionText('')
+                  setSuggestionCodigo('')
+                  setDialogOpen(true)
+                }}
               >
                 clique aqui
               </button>
@@ -410,18 +423,59 @@ export function AberturaChamadoPage() {
 
       <Dialog
         open={dialogOpen}
-        title="Cadastrar novo item"
-        onClose={() => setDialogOpen(false)}
-        onConfirm={() => setDialogOpen(false)}
+        title={
+          step === 1
+            ? 'Sugerir nova sala'
+            : step === 3
+              ? tipo === 'mobilia'
+                ? 'Sugerir mobília'
+                : 'Sugerir equipamento'
+              : 'Sugerir defeito'
+        }
+        onClose={() => {
+          setDialogOpen(false)
+          setSuggestionText('')
+          setSuggestionCodigo('')
+        }}
+        onConfirm={() => {
+          setDialogOpen(false)
+          setSuggestionText('')
+          setSuggestionCodigo('')
+        }}
+        confirmLabel="Enviar"
       >
         <div className="flex flex-col gap-4">
-          <p>Informe os dados do item não cadastrado para que a equipe possa avaliar.</p>
+          <p>Informe os dados não cadastrados para que a equipe possa avaliar.</p>
           <Input
-            label="Código da sala"
-            value={codigoSala}
-            onChange={(e) => setCodigoSala(e.target.value)}
-            placeholder="Ex: A101"
+            label={
+              step === 1
+                ? 'Código da sala'
+                : step === 3
+                  ? tipo === 'mobilia'
+                    ? 'Nome da mobília'
+                    : 'Nome do equipamento'
+                  : 'Defeito sugerido'
+            }
+            value={suggestionText}
+            onChange={(e) => setSuggestionText(e.target.value)}
+            placeholder={
+              step === 1
+                ? 'Ex: A101'
+                : step === 3
+                  ? tipo === 'mobilia'
+                    ? 'Ex: Cadeira, armário, mesa'
+                    : 'Ex: Projetor, computador, teclado'
+                  : 'Ex: Tela não liga, não carrega'
+            }
           />
+          {step === 3 && tipo === 'equipamento' && (
+            <Input
+              label="Código de patrimônio"
+              value={suggestionCodigo}
+              onChange={(e) => setSuggestionCodigo(e.target.value)}
+              placeholder="Ex: A12345"
+            />
+          )}
         </div>
       </Dialog>
     </PageLayout>

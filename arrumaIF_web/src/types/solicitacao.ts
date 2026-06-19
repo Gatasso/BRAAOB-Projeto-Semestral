@@ -22,6 +22,7 @@ export interface HistoricoItem {
   status_anterior: string | null
   status_novo: string
   data_alteracao: string
+  usuario_nome?: string
 }
 
 export interface SolicitacaoDetalhe {

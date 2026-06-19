@@ -43,8 +43,9 @@ export function formatHistorico(historico: HistoricoItem[]): string {
   return historico
     .map((item) => {
       const de = item.status_anterior ?? '—'
+      const usuario = item.usuario_nome ? ` por ${item.usuario_nome}` : ''
       const data = formatDate(item.data_alteracao)
-      return `${de} → ${item.status_novo} (${data})`
+      return `${de} → ${item.status_novo}${usuario} (${data})`
     })
     .join('\n')
 }
@@ -71,12 +72,22 @@ export function resumoToChamadoUI(resumo: SolicitacaoResumo): ChamadoUI {
 export function detalheToChamadoUI(
   detalhe: SolicitacaoDetalhe,
   defeitoTitulo?: string,
+  materialName?: string,
+  numeroMaterial?: string,
+  historicoItems?: HistoricoItem[],
 ): ChamadoUI {
   const material =
+    materialName ??
     detalhe.cod_patrimonio ??
     (detalhe.mobiliario_id ? `Mobiliário #${detalhe.mobiliario_id}` : null) ??
     (detalhe.componente_id ? `Componente #${detalhe.componente_id}` : null) ??
     'Material'
+
+  const numero =
+    numeroMaterial ??
+    detalhe.cod_patrimonio ??
+    (detalhe.mobiliario_id ? '-' : null) ??
+    (detalhe.componente_id ? String(detalhe.componente_id) : '—')
 
   const titulo = defeitoTitulo ? `${material} - ${defeitoTitulo}` : material
 
@@ -87,10 +98,10 @@ export function detalheToChamadoUI(
     data: formatDate(detalhe.criado_em),
     descricao: detalhe.descricao_defeito ?? 'Sem descrição adicional.',
     equipamento: material,
-    numero: detalhe.cod_patrimonio ?? String(detalhe.mobiliario_id ?? detalhe.componente_id ?? '—'),
+    numero,
     status: detalhe.status,
     imagem: getGenericImage(detalhe.id, material),
-    historico: formatHistorico(detalhe.historico),
+    historico: formatHistorico(historicoItems ?? detalhe.historico),
   }
 }
 
