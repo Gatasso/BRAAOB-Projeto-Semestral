@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PageLayout } from '@/components/layouts/PageLayout'
 import {
@@ -8,37 +8,24 @@ import {
   Input,
   Textarea,
 } from '@/components/ui'
-
-const SALAS_POR_ANDAR: Record<string, string[]> = {
-  'Andar 1': ['A101', 'A102', 'A103', 'A104'],
-  'Andar 2': ['B201', 'B202', 'B203', 'B204', 'B205', 'B206', 'B207'],
-  'Andar 3': ['C301'],
-  'Andar 4': ['A401', 'A402', 'A403', 'A404', 'A405', 'A406', 'A407', 'A408', 'A409'],
-  'Andar 5': ['D501', 'D502', 'D503', 'D504', 'D505', 'D506', 'D507', 'D508', 'D509'],
-}
-
-const EQUIPAMENTOS = ['Monitor', 'Teclado', 'Mouse', 'Projetor', 'Computador']
-const MOBILIA = ['Cadeira', 'Mesa', 'Armário', 'Prateleira', 'Quadro']
-const DEFEITOS_EQUIP = [
-  'Não liga',
-  'Tela quebrada',
-  'Falha mecânica',
-  'Sem imagem',
-  'Superaquecimento',
-  'Barulho anormal',
-  'Conexão instável',
-  'Outro',
-]
-const DEFEITOS_MOBILIA = [
-  'Instabilidade',
-  'Quebrado',
-  'Desgaste',
-  'Falta de parafusos',
-  'Roda danificada',
-  'Outro',
-]
+import { getUser } from '@/lib/auth'
+import {
+  fetchDefeitos,
+  fetchEquipamentos,
+  fetchLocais,
+  fetchMobiliarios,
+} from '@/services/catalogoService'
+import { criarSolicitacao } from '@/services/solicitacaoService'
+import type { DefeitoCatalogo, Equipamento, Mobiliario } from '@/types/catalogo'
+import { groupLocaisPorAndar } from '@/utils/chamadoMappers'
+import { ApiError } from '@/services/api'
 
 type TipoMaterial = 'equipamento' | 'mobilia' | null
+
+const CATEGORIA_POR_TIPO: Record<Exclude<TipoMaterial, null>, 'Equipamento' | 'Mobília'> = {
+  equipamento: 'Equipamento',
+  mobilia: 'Mobília',
+}
 
 export function AberturaChamadoPage() {
   const navigate = useNavigate()
@@ -50,8 +37,19 @@ export function AberturaChamadoPage() {
   const [descricao, setDescricao] = useState('')
   const [codigoSala, setCodigoSala] = useState('')
   const [codigoPatrimonio, setCodigoPatrimonio] = useState('')
-  const [computadorFoto, setComputadorFoto] = useState<File | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
+
+  const [locaisLoading, setLocaisLoading] = useState(true)
+  const [catalogError, setCatalogError] = useState<string | null>(null)
+  const [salasPorAndar, setSalasPorAndar] = useState<Record<string, string[]>>({})
+
+  const [equipamentos, setEquipamentos] = useState<Equipamento[]>([])
+  const [mobiliarios, setMobiliarios] = useState<Mobiliario[]>([])
+  const [defeitos, setDefeitos] = useState<DefeitoCatalogo[]>([])
+  const [catalogLoading, setCatalogLoading] = useState(false)
+
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const titulos = [
     'Abertura de Chamado - Passo 1',
@@ -61,33 +59,141 @@ export function AberturaChamadoPage() {
     'Abertura de Chamado - Final',
   ]
 
+  useEffect(() => {
+    fetchLocais()
+      .then((locais) => setSalasPorAndar(groupLocaisPorAndar(locais)))
+      .catch(() => setCatalogError('Não foi possível carregar as salas.'))
+      .finally(() => setLocaisLoading(false))
+  }, [])
+
+  useEffect(() => {
+    if (step !== 3 || !tipo || sala.length === 0) return
+
+    setCatalogLoading(true)
+    setCatalogError(null)
+
+    const load = async () => {
+      try {
+        if (tipo === 'equipamento') {
+          const data = await fetchEquipamentos(sala[0])
+          setEquipamentos(data)
+        } else {
+          const data = await fetchMobiliarios()
+          setMobiliarios(data)
+        }
+      } catch {
+        setCatalogError('Erro ao carregar materiais.')
+      } finally {
+        setCatalogLoading(false)
+      }
+    }
+
+    load()
+  }, [step, tipo, sala])
+
+  useEffect(() => {
+    if (step !== 4 || !tipo) return
+
+    const categoria = CATEGORIA_POR_TIPO[tipo]
+    setCatalogLoading(true)
+    setDefeitos([])
+    fetchDefeitos(categoria)
+      .then(setDefeitos)
+      .catch(() => setCatalogError('Erro ao carregar defeitos.'))
+      .finally(() => setCatalogLoading(false))
+  }, [step, tipo])
+
+  const equipamentoOptions = useMemo(
+    () =>
+      equipamentos.map((e) => ({
+        value: e.cod_patrimonio,
+        label: `${e.nome} (${e.cod_patrimonio})`,
+      })),
+    [equipamentos],
+  )
+
+  const mobiliaOptions = useMemo(
+    () =>
+      mobiliarios.map((m) => ({
+        value: String(m.id),
+        label: m.nome,
+      })),
+    [mobiliarios],
+  )
+
+  const defeitoOptions = useMemo(
+    () =>
+      defeitos.map((d) => ({
+        value: String(d.id_defeito),
+        label: d.titulo,
+      })),
+    [defeitos],
+  )
+
+  const selectedEquipamentoLabel =
+    equipamentos.find((e) => e.cod_patrimonio === item[0])?.nome ?? item[0]
+  const selectedMobiliaLabel =
+    mobiliarios.find((m) => String(m.id) === item[0])?.nome ?? item[0]
+  const selectedDefeitoLabel =
+    defeitos.find((d) => String(d.id_defeito) === defeito[0])?.titulo ?? defeito[0]
+
   const canGoNext =
     step === 1
       ? sala.length > 0
       : step === 2
-      ? tipo !== null
-      : step === 3
-      ? item.length > 0 && codigoPatrimonio.trim().length > 0
-      : step === 4
-      ? defeito.length > 0
-      : true
+        ? tipo !== null
+        : step === 3
+          ? tipo === 'mobilia'
+            ? item.length > 0
+            : item.length > 0 || codigoPatrimonio.trim().length > 0
+          : step === 4
+            ? defeito.length > 0
+            : true
+
+  const handleItemChange = (selected: string[]) => {
+    setItem(selected)
+    if (tipo === 'equipamento' && selected[0]) {
+      setCodigoPatrimonio(selected[0])
+    }
+  }
 
   const handleConfirm = () => {
     if (!canGoNext) return
+    if (step < 5) setStep(step + 1)
+  }
 
-    if (step < 5) {
-      setStep(step + 1)
-    } else {
+  const handleSubmit = async () => {
+    const user = getUser()
+    if (!user || !sala[0] || !defeito[0] || !tipo) return
+
+    setSubmitting(true)
+    setSubmitError(null)
+
+    try {
+      await criarSolicitacao({
+        usuario_id: user.id,
+        cod_sala: sala[0],
+        id_defeito: Number(defeito[0]),
+        descricao_defeito: descricao || undefined,
+        ...(tipo === 'equipamento'
+          ? { cod_patrimonio: codigoPatrimonio.trim() || item[0] }
+          : { mobiliario_id: Number(item[0]) }),
+      })
       navigate('/')
+    } catch (err) {
+      setSubmitError(
+        err instanceof ApiError
+          ? err.message
+          : 'Erro ao abrir chamado. Tente novamente.',
+      )
+    } finally {
+      setSubmitting(false)
     }
   }
 
   const handleBack = () => {
-    if (step > 1) {
-      setStep(step - 1)
-    } else {
-      navigate('/')
-    }
+    if (step > 1) setStep(step - 1)
+    else navigate('/')
   }
 
   return (
@@ -97,24 +203,34 @@ export function AberturaChamadoPage() {
           {titulos[step - 1]}
         </h1>
 
+        {catalogError && (
+          <p className="text-center text-alert mb-4" role="alert">
+            {catalogError}
+          </p>
+        )}
+
         {step === 1 && (
           <>
             <p className="text-xl text-text text-center mb-8">
               Selecione uma sala de aula ou laboratório
             </p>
-            <div className="bg-search-bg rounded-2xl p-8 flex flex-wrap gap-8 justify-center mb-8">
-              {Object.entries(SALAS_POR_ANDAR).map(([andar, salas]) => (
-                <div key={andar} className="min-w-[100px]">
-                  <h3 className="text-xl font-bold text-text mb-4">{andar}</h3>
-                  <CheckboxGroup
-                    options={salas}
-                    selected={sala}
-                    onChange={setSala}
-                    singleSelection
-                  />
-                </div>
-              ))}
-            </div>
+            {locaisLoading ? (
+              <p className="text-center text-text-secondary py-8">Carregando salas...</p>
+            ) : (
+              <div className="bg-search-bg rounded-2xl p-8 flex flex-wrap gap-8 justify-center mb-8">
+                {Object.entries(salasPorAndar).map(([andar, salas]) => (
+                  <div key={andar} className="min-w-[100px]">
+                    <h3 className="text-xl font-bold text-text mb-4">{andar}</h3>
+                    <CheckboxGroup
+                      options={salas}
+                      selected={sala}
+                      onChange={setSala}
+                      singleSelection
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
             <p className="text-center text-text-secondary mb-8">
               Em caso de uma sala não estiver cadastrada,{' '}
               <button
@@ -138,6 +254,7 @@ export function AberturaChamadoPage() {
                 variant="equipamento"
                 onClick={() => {
                   setTipo('equipamento')
+                  setItem([])
                   setStep(3)
                 }}
               >
@@ -147,6 +264,8 @@ export function AberturaChamadoPage() {
                 variant="mobilia"
                 onClick={() => {
                   setTipo('mobilia')
+                  setItem([])
+                  setCodigoPatrimonio('')
                   setStep(3)
                 }}
               >
@@ -167,21 +286,27 @@ export function AberturaChamadoPage() {
               <h3 className="text-xl font-bold text-text mb-4 text-center">
                 {tipo === 'mobilia' ? 'Mobília' : 'Equipamentos'}
               </h3>
-              <CheckboxGroup
-                options={tipo === 'mobilia' ? MOBILIA : EQUIPAMENTOS}
-                selected={item}
-                onChange={setItem}
-                singleSelection
-              />
+              {catalogLoading ? (
+                <p className="text-center text-text-secondary">Carregando...</p>
+              ) : (
+                <CheckboxGroup
+                  options={tipo === 'mobilia' ? mobiliaOptions : equipamentoOptions}
+                  selected={item}
+                  onChange={handleItemChange}
+                  singleSelection
+                />
+              )}
             </div>
-            <div className="grid grid-cols-1 gap-4 max-w-md mx-auto mb-8">
-              <Input
-                label="Código de patrimônio"
-                value={codigoPatrimonio}
-                onChange={(e) => setCodigoPatrimonio(e.target.value)}
-                placeholder="Digite o código do equipamento"
-              />
-            </div>
+            {tipo === 'equipamento' && (
+              <div className="grid grid-cols-1 gap-4 max-w-md mx-auto mb-8">
+                <Input
+                  label="Código de patrimônio"
+                  value={codigoPatrimonio}
+                  onChange={(e) => setCodigoPatrimonio(e.target.value)}
+                  placeholder="Digite ou selecione acima"
+                />
+              </div>
+            )}
             <p className="text-center text-text-secondary mb-8">
               Em caso de um{' '}
               {tipo === 'mobilia' ? 'mobília' : 'equipamento'} não estiver cadastrado,{' '}
@@ -200,12 +325,16 @@ export function AberturaChamadoPage() {
           <>
             <p className="text-xl text-text text-center mb-8">Selecione um Defeito</p>
             <div className="bg-search-bg rounded-2xl p-8 max-w-md mx-auto mb-8">
-              <CheckboxGroup
-                options={tipo === 'mobilia' ? DEFEITOS_MOBILIA : DEFEITOS_EQUIP}
-                selected={defeito}
-                onChange={setDefeito}
-                singleSelection
-              />
+              {catalogLoading ? (
+                <p className="text-center text-text-secondary">Carregando...</p>
+              ) : (
+                <CheckboxGroup
+                  options={defeitoOptions}
+                  selected={defeito}
+                  onChange={setDefeito}
+                  singleSelection
+                />
+              )}
             </div>
             <p className="text-center text-text-secondary mb-8">
               Em caso de um defeito não estiver cadastrado,{' '}
@@ -225,25 +354,15 @@ export function AberturaChamadoPage() {
             <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_0.9fr] gap-6 items-start">
               <div className="flex flex-col gap-6">
                 <h2 className="text-2xl font-bold text-text mb-2 text-center xl:text-left">
-                  {item[0] ?? 'Item'} - {defeito[0] ?? 'Defeito'}
+                  {(tipo === 'mobilia' ? selectedMobiliaLabel : selectedEquipamentoLabel) ??
+                    'Item'}{' '}
+                  - {selectedDefeitoLabel ?? 'Defeito'}
                 </h2>
                 <div className="bg-input-bg rounded-2xl p-6 flex flex-col items-start gap-4">
                   <p className="text-base text-text-secondary">
-                    Selecione a foto do computador para enviar junto ao chamado.
+                    Upload de foto será habilitado em breve. Por enquanto, o chamado será
+                    registrado sem anexo.
                   </p>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(event) =>
-                      setComputadorFoto(event.target.files?.[0] ?? null)
-                    }
-                    className="w-full text-sm text-text"
-                  />
-                  {computadorFoto && (
-                    <p className="text-sm text-text-secondary">
-                      Arquivo selecionado: {computadorFoto.name}
-                    </p>
-                  )}
                 </div>
               </div>
               <div className="flex-1 bg-search-bg rounded-2xl p-6 flex flex-col gap-6">
@@ -251,7 +370,8 @@ export function AberturaChamadoPage() {
                   Localização: Sala {sala[0] ?? '—'} · IFSP Bragança Paulista
                 </p>
                 <p className="text-base text-text-secondary">
-                  Material: {item[0] ?? '—'}
+                  Material:{' '}
+                  {tipo === 'mobilia' ? selectedMobiliaLabel : selectedEquipamentoLabel}
                 </p>
                 <Textarea
                   placeholder="Especifique aqui o problema"
@@ -261,13 +381,19 @@ export function AberturaChamadoPage() {
                 />
               </div>
             </div>
+            {submitError && (
+              <p className="text-center text-alert" role="alert">
+                {submitError}
+              </p>
+            )}
             <div className="flex justify-center">
               <Button
                 variant="salvar-chamado"
-                onClick={() => navigate('/')}
+                onClick={handleSubmit}
+                disabled={submitting}
                 className="w-full max-w-[340px]"
               >
-                Abrir Chamado
+                {submitting ? 'Abrindo...' : 'Abrir Chamado'}
               </Button>
             </div>
           </div>

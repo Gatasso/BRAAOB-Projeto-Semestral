@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { AdminProtectedRoute } from '@/components/AdminProtectedRoute'
 import {
   AberturaChamadoPage,
   AdminEditChamadoPage,
@@ -45,8 +46,22 @@ export default function App() {
           }
         />
         <Route path="/admin/login" element={<AdminLoginPage />} />
-        <Route path="/admin" element={<AdminHomePage />} />
-        <Route path="/admin/chamado/:id/editar" element={<AdminEditChamadoPage />} />
+        <Route
+          path="/admin"
+          element={
+            <AdminProtectedRoute>
+              <AdminHomePage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/chamado/:id/editar"
+          element={
+            <AdminProtectedRoute>
+              <AdminEditChamadoPage />
+            </AdminProtectedRoute>
+          }
+        />
         <Route path="*" element={<RootRedirect />} />
       </Routes>
     </BrowserRouter>

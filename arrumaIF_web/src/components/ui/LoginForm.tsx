@@ -3,15 +3,22 @@ import { Button } from './Button'
 import { Input } from './Input'
 
 export interface LoginFormProps {
-  onSubmit?: (data: { prontuario: string; senha: string }) => void
+  onSubmit?: (data: { prontuario: string; senha: string }) => void | Promise<void>
+  loading?: boolean
+  error?: string | null
   className?: string
 }
 
-export function LoginForm({ onSubmit, className = '' }: LoginFormProps) {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+export function LoginForm({
+  onSubmit,
+  loading = false,
+  error = null,
+  className = '',
+}: LoginFormProps) {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const form = new FormData(e.currentTarget)
-    onSubmit?.({
+    await onSubmit?.({
       prontuario: String(form.get('prontuario') ?? ''),
       senha: String(form.get('senha') ?? ''),
     })
@@ -47,9 +54,19 @@ export function LoginForm({ onSubmit, className = '' }: LoginFormProps) {
           placeholder="Senha"
           required
         />
-        <Button variant="primary-full" type="submit" className="max-w-full w-full">
-          Entrar
+        <Button
+          variant="primary-full"
+          type="submit"
+          className="max-w-full w-full"
+          disabled={loading}
+        >
+          {loading ? 'Entrando...' : 'Entrar'}
         </Button>
+        {error && (
+          <p className="text-sm text-alert text-center" role="alert">
+            {error}
+          </p>
+        )}
       </form>
     </div>
   )

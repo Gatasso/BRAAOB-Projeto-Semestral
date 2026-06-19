@@ -4,13 +4,20 @@ from app.models import Defeitos
 
 defeitos_bp = Blueprint('defeitos_bp', __name__, url_prefix='/api/defeitos')
 
+VALID_CATEGORIES = ['Equipamento', 'Mobília']
+
 @defeitos_bp.post('/')
 def criar_defeito():
     data = request.get_json() or {}
+    
+    categoria = data.get('categoria')
+    if categoria not in VALID_CATEGORIES:
+        return jsonify({"error": f"Categoria inválida. Escolha entre: {', '.join(VALID_CATEGORIES)}"}), 400
     try:
         novo_defeito = Defeitos(
             titulo=data.get('titulo'),
-            descricao=data.get('descricao')
+            descricao=data.get('descricao'),
+            categoria = data.get('categoria')
         )
         db.session.add(novo_defeito)
         db.session.commit()

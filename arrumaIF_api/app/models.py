@@ -128,6 +128,7 @@ class Defeitos(db.Model):
     id_defeito = db.Column(db.Integer, primary_key=True, autoincrement=True) 
     titulo = db.Column(db.String(150), unique=True, nullable=False) 
     descricao = db.Column(db.Text, nullable=True) 
+    categoria = db.Column('Categoria', db.String(50), nullable=False)
 
     solicitacoes = db.relationship('Solicitacao', back_populates='defeito', lazy='dynamic')
 
@@ -135,7 +136,8 @@ class Defeitos(db.Model):
         return {
             'id_defeito': self.id_defeito,
             'titulo': self.titulo,
-            'descricao': self.descricao
+            'descricao': self.descricao,
+            "categoria": self.categoria
         }
 
 
@@ -145,6 +147,7 @@ class Solucoes(db.Model):
     id_solucao = db.Column(db.Integer, primary_key=True, autoincrement=True) 
     titulo = db.Column(db.String(150), unique=True, nullable=False) 
     descricao = db.Column(db.Text, nullable=True)
+    categoria = db.Column('Categoria', db.String(50), nullable=False)
 
     solicitacoes = db.relationship('Solicitacao', back_populates='solucao', lazy='dynamic')
 
@@ -152,7 +155,8 @@ class Solucoes(db.Model):
         return {
             'id_solucao': self.id_solucao,
             'titulo': self.titulo,
-            'descricao': self.descricao
+            'descricao': self.descricao,
+            "categoria": self.categoria
         }
 
 

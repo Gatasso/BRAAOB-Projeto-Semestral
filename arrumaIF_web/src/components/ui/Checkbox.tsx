@@ -24,12 +24,23 @@ export function Checkbox({ label, className = '', id, ...props }: CheckboxProps)
   )
 }
 
+export interface CheckboxOption {
+  value: string
+  label: string
+}
+
 export interface CheckboxGroupProps {
-  options: string[]
+  options: string[] | CheckboxOption[]
   selected: string[]
   onChange: (selected: string[]) => void
   singleSelection?: boolean
   className?: string
+}
+
+function normalizeOptions(options: string[] | CheckboxOption[]): CheckboxOption[] {
+  return options.map((option) =>
+    typeof option === 'string' ? { value: option, label: option } : option,
+  )
 }
 
 export function CheckboxGroup({
@@ -39,24 +50,26 @@ export function CheckboxGroup({
   singleSelection = false,
   className = '',
 }: CheckboxGroupProps) {
-  const toggle = (option: string) => {
-    if (selected.includes(option)) {
-      onChange(selected.filter((s) => s !== option))
+  const normalized = normalizeOptions(options)
+
+  const toggle = (value: string) => {
+    if (selected.includes(value)) {
+      onChange(selected.filter((s) => s !== value))
     } else if (singleSelection) {
-      onChange([option])
+      onChange([value])
     } else {
-      onChange([...selected, option])
+      onChange([...selected, value])
     }
   }
 
   return (
     <div className={`flex flex-col gap-2.5 ${className}`}>
-      {options.map((option) => (
+      {normalized.map((option) => (
         <Checkbox
-          key={option}
-          label={option}
-          checked={selected.includes(option)}
-          onChange={() => toggle(option)}
+          key={option.value}
+          label={option.label}
+          checked={selected.includes(option.value)}
+          onChange={() => toggle(option.value)}
         />
       ))}
     </div>
