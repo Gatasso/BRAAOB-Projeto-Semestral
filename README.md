@@ -21,8 +21,8 @@ transparente de comunicação.
 - [ ✅ ] Protótipos de Telas
 - [ ✅ ] Schema Banco de Dados
 - [ ✅ ] API Backend
-- [ ⏳ ] Front-End
-- [ ⏳ ] Aplicativo Mobile 
+- [ ✅ ] Front-End
+- [ ✅ ] Aplicativo Mobile 
 
 
 ## 🎯 Objetivos
